@@ -10,6 +10,7 @@ import android.provider.MediaStore
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -18,54 +19,46 @@ import java.io.File
 import java.io.IOException
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var cameraResult: ActivityResultLauncher<Intent>
-    private lateinit var galleryResult: ActivityResultLauncher<Intent>
+    private lateinit var nameText: EditText
 
     private lateinit var userDataPrefs: SharedPreferences
     private lateinit var editor: SharedPreferences.Editor
 
-    private val imgName="lab1_old_img.jpg"
+    private var savedImgName = "lab1_saved_img.jpg"
+    private var tempImgName = "lab1_temp_img.jpg"
     private val PREFS_FILE_NAME = "Lab1PrefsFile_UserData"
 
     companion object{
         val EXTRA_KEY = "extra key"
         lateinit var profileImg: ImageView
-        lateinit var imgSaveLocation:Uri
+        lateinit var tempImgLocation:Uri
+        lateinit var savedImgLocation:Uri
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         profileImg = findViewById(R.id.photoProfile)
+        nameText = findViewById(R.id.nameInput)
 
         userDataPrefs = getSharedPreferences(PREFS_FILE_NAME, MODE_PRIVATE)
         editor = userDataPrefs.edit()
 
+        nameText.setText(userDataPrefs.getString("name", "Your Name"))
+
         loadSavedImage()
-
-        galleryResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult(),{
-            if(it.resultCode == Activity.RESULT_OK && it.data != null) {
-                val selectedImg: Uri = it.data?.data!!
-                profileImg.setImageURI(selectedImg)
-            }
-        })
-
-        cameraResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult(),{
-            if(it.resultCode == Activity.RESULT_OK) {
-                println("The imgSaveLocation: " + imgSaveLocation)
-                val bitmap = Util.getBitmap(this, imgSaveLocation)
-                profileImg.setImageBitmap(bitmap)
-            }
-        })
     }
 
     fun loadSavedImage() {
-        val oldImage = File(getExternalFilesDir(null), imgName)
-        imgSaveLocation = FileProvider.getUriForFile(this, "com.example.practice_app", oldImage)
+        val savedImg = File(getExternalFilesDir(null), savedImgName)
+        savedImgLocation = FileProvider.getUriForFile(this, "com.example.practice_app", savedImg)
 
-        if(oldImage.exists()){
-            val bitmap = Util.getBitmap(this, imgSaveLocation)
-            println("The imgSaveLocation inside the oldImg check: " + imgSaveLocation)
+        val tempImage = File(getExternalFilesDir(null), tempImgName)
+        tempImgLocation = FileProvider.getUriForFile(this, "com.example.practice_app", tempImage)
+
+        if(savedImg.exists()){
+            val bitmap = Util.getBitmap(this, savedImgLocation)
+            println("The imgSaveLocation inside the oldImg check: " + savedImgLocation)
             profileImg.setImageBitmap(bitmap)
         }
     }
@@ -92,19 +85,21 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun onClickBtnToSave(view: View) {
-//        val oldImg = File(getExternalFilesDir(null), oldImgName)
-//        val newImg = File(getExternalFilesDir(null), newImgName)
-//        newImg.copyTo(oldImg, true)
+        val oldImg = File(getExternalFilesDir(null), savedImgName)
+        val newImg = File(getExternalFilesDir(null), tempImgName)
+        newImg.copyTo(oldImg, true)
 
-//        val name:String = nameText.text.toString()
-//        editor.putString("name", name)
-//        editor.apply()
+        val name:String = nameText.text.toString()
+        editor.putString("name", name)
+        editor.apply()
 
         Toast.makeText(this, "Saved!", Toast.LENGTH_SHORT).show()
         this.finishAffinity();
     }
 
     fun onClickBtnToCancel(view: View) {
+        val newImg = File(getExternalFilesDir(null), tempImgName)
+        newImg.delete()
         this.finishAffinity();
     }
 

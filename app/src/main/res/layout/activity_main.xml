@@ -20,20 +20,20 @@
     <!--    Profile Photo Section  -->
     <LinearLayout
         android:layout_width="fill_parent"
-        android:layout_height="260dp">
+        android:layout_height="230dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Profile Photo:"
             android:layout_marginTop="10dp"
-            android:textSize="20dp"
+            android:textSize="15dp"
             />
 
         <ImageView
             android:id="@+id/photoProfile"
-            android:layout_width="180dp"
-            android:layout_height="200dp"
+            android:layout_width="140dp"
+            android:layout_height="180dp"
             android:contentDescription="@string/my_image_description"
             android:layout_gravity="center"
             android:layout_marginTop="20dp"
@@ -48,6 +48,22 @@
         android:layout_marginRight="20dp"
         android:onClick="onChangeBtnToGetPhoto"
         />
+
+    <!--    Name Input Section  -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:textSize="20dp"
+        android:text="Name"
+        />
+
+    <EditText
+        android:id="@+id/nameInput"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:textColor="@color/dark_gray"/>
 
     <!--    Save / Cancel Buttons Section  -->
     <LinearLayout

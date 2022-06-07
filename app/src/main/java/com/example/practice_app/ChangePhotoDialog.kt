@@ -64,8 +64,8 @@ class ChangePhotoDialog : DialogFragment(), DialogInterface.OnClickListener{
 
         cameraResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult(),{
             if(it.resultCode == Activity.RESULT_OK) {
-                println("The imgSaveLocation: " + MainActivity.imgSaveLocation)
-                val bitmap = Util.getBitmap(requireContext(), MainActivity.imgSaveLocation)
+                println("The imgSaveLocation: " + MainActivity.tempImgLocation)
+                val bitmap = Util.getBitmap(requireContext(), MainActivity.tempImgLocation)
                 MainActivity.profileImg.setImageBitmap(bitmap)
                 dismiss()
             }
@@ -95,7 +95,7 @@ class ChangePhotoDialog : DialogFragment(), DialogInterface.OnClickListener{
     fun useCameraToTakePhoto(view: View) {
         Util.checkPermissions(requireActivity())
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, MainActivity.imgSaveLocation)
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, MainActivity.tempImgLocation)
         cameraResult.launch(intent)
     }
 
