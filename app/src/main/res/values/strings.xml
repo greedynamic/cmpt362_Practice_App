@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Practice_App</string>
+    <string name="hint">type something</string>
+    <string name="my_image_description">lab1_img</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
