@@ -5,8 +5,10 @@ import android.app.AlertDialog
 import android.app.Dialog
 import android.content.DialogInterface
 import android.content.Intent
+import android.graphics.Bitmap.CompressFormat.*
 import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -20,6 +22,9 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
 import androidx.fragment.app.DialogFragment
 import java.io.File
+import java.io.FileOutputStream
+import java.io.OutputStream
+import kotlin.math.max
 
 /**
  * A simple [Fragment] subclass.
@@ -56,15 +61,15 @@ class ChangePhotoDialog : DialogFragment(), DialogInterface.OnClickListener{
 
         galleryResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult(),{
             if(it.resultCode == Activity.RESULT_OK && it.data != null) {
-                val selectedImg: Uri = it.data?.data!!
-                MainActivity.profileImg.setImageURI(selectedImg)
+                val selectedImgUri: Uri = it.data?.data!!
+                saveSelectedImgToTempImg(selectedImgUri)
+                MainActivity.profileImg.setImageURI(selectedImgUri)
                 dismiss()
             }
         })
 
         cameraResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult(),{
             if(it.resultCode == Activity.RESULT_OK) {
-                println("The imgSaveLocation: " + MainActivity.tempImgLocation)
                 val bitmap = Util.getBitmap(requireContext(), MainActivity.tempImgLocation)
                 MainActivity.profileImg.setImageBitmap(bitmap)
                 dismiss()
@@ -102,6 +107,17 @@ class ChangePhotoDialog : DialogFragment(), DialogInterface.OnClickListener{
     fun useGalleryToLoadPhoto(view: View) {
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         galleryResult.launch(intent)
+    }
+
+    // The function below is copied from StackOverflow https://stackoverflow.com/a/3013625
+    fun saveSelectedImgToTempImg(imgUri: Uri) {
+        var fOut: OutputStream? = null
+        val tempImage = File(requireActivity().getExternalFilesDir(null), MainActivity.tempImgName)
+        fOut = FileOutputStream(tempImage)
+
+        val picBitmap = Util.getBitmap(requireContext(), imgUri)
+        picBitmap.compress(JPEG, 85, fOut)
+        fOut.close()
     }
 
     override fun onClick(dialog: DialogInterface, item: Int) {
